@@ -1,7 +1,7 @@
 # OBSCord-Snap
 **A Lioranboard Extension that makes it possible to directly make screenshots from OBS and put them online in Discord.**
 
-For it to work you need to have set up a webhook in your discord.
+For it to work you need to have set up a webhook in your discord.  
 Discord link: https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks
 
 The Extension includes an example deck with 2 buttons. Practically it's ready to use.  
