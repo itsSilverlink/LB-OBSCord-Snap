@@ -1,6 +1,9 @@
 # OBSCord-Snap
 **A Lioranboard Extension that makes it possible to directly make screenshots from OBS and put them online in Discord.**
 
+The Extension includes an example deck on how to use it.
+The deck includes a method of using it as a chat command and as a channel point redemption.
+
 ### Prerequisites
 * [OBS Studio](https://obsproject.com/)
 * [OBS Studio WebSocket](https://github.com/Palakis/obs-websocket/releases)
