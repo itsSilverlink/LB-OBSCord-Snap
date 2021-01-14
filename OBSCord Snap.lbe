@@ -1,0 +1,552 @@
+[extension_name]
+OBSCord Snap
+[insert_external]
+<div>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/obs-websocket-js@4.0.2/dist/obs-websocket.js"></script>
+  <p>OBSCord Snap v1 by Silverlink - <small>Uploads your OBS Source Screenshots directly to Discord through a Webhook</small></p>
+</div>
+[insert_command]
+lioranboardclient.send('{"type": "MESSAGE", "topic": "ExtensionCommand", "name": "OBSCord Snap","boxcount": 6,	"boxname1": "webhookURL",	"boxtype1": "string",	"boxname2": "obswsURL",	"boxtype2": "string",	"boxname3": "obswsPass", "boxtype3": "string",	"boxname4": "sourceName",	"boxtype4": "string",	"boxname5": "filePath",	"boxtype5": "string", "boxname6": "optionalText",	"boxtype6": "string"}');
+[insert_hook]
+case "OBSCordSnap":{
+	OBSCordSnap(LioranBoardJSON.webhookURL,LioranBoardJSON.obswsURL,LioranBoardJSON.obswsPass,LioranBoardJSON.sourceName,LioranBoardJSON.filePath, LioranBoardJSON.optionalText);
+} break
+[insert_script]
+async function OBSCordSnap(webhookURL, obswsURL, obswsPass, sourceName, filePath, optionalText) {
+  function Base64ToBlob(b64Data, contentType, sliceSize) {
+    contentType = contentType || '';
+    sliceSize = sliceSize || 512;
+
+    var byteCharacters = atob(b64Data);
+    var byteArrays = [];
+
+    for (var offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        var slice = byteCharacters.slice(offset, offset + sliceSize);
+
+        var byteNumbers = new Array(slice.length);
+        for (var i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        var byteArray = new Uint8Array(byteNumbers);
+
+        byteArrays.push(byteArray);
+    }
+
+    var blob = new Blob(byteArrays, {type: contentType});
+    return blob;
+  }
+
+  if (filePath.includes('%')) {
+    lioranboardclient.send('{"type":"MESSAGE","topic":"AlertMessage","message":"OBSCordSnap: You have used a % in your filePath variable. Please use absolute file paths!"}');
+    lioranboardclient.send('{"type":"MESSAGE","topic":"AlertMessage","message":"Absolute paths look like this: C:/foldername/filename.png"}');
+    return
+  }
+
+  obswsURL = obswsURL || 'localhost:4444';
+  obswsPass = obswsPass || '';
+  optionalText = (optionalText === '0') ? '' : (optionalText || '');
+  
+  const obs = new OBSWebSocket();
+
+  obs.connect({
+    address: obswsURL,
+    password: obswsPass
+  });
+
+  obs.on('AuthenticationSuccess', async () => {
+    try {
+      let screenshotData = await obs.send('TakeSourceScreenshot', {
+        "sourceName": sourceName,
+        "embedPictureFormat": "png",
+        "saveToFilePath": filePath
+      });
+
+      let imgFile = (screenshotData.img);
+      let block = imgFile.split(";");
+      let contentType = block[0].split(":")[1];
+      let encodedImage = block[1].split(",")[1];
+      let blob = Base64ToBlob(encodedImage, contentType);			
+    
+      let formData = new FormData();
+      formData.append("image", blob, "OBSCord Snap.png");
+      formData.append("payload_json", `{"content": "${optionalText}"}`);
+
+      let requestOptions = {
+        method: 'POST',
+        body: formData,
+        redirect: 'follow'
+      };
+
+      let response = await fetch(webhookURL, requestOptions);
+
+      if (response.status == 401) {
+        throw "Invalid webhookURL or webhook Token."
+      }
+
+      lioranboardclient.send(`{"type":"MESSAGE","topic":"AlertMessage","message":"Screenshot saved to discord!"}`);
+
+    } catch (error) {
+      if (typeof error === 'object') {
+        error = error.error;
+      }
+
+      if (typeof error === 'string') {
+        lioranboardclient.send(`{"type":"MESSAGE","topic":"AlertMessage","message":"${error}"}`);
+      } else {
+        console.error(error)
+      }
+    }
+    obs.disconnect();      
+  })
+}
+
+[insert_over]
+[buttons_3x3]
+activepress="0.000000"
+border_size="0.000000"
+combine="1003.000000"
+type="nothing"
+[buttons_2x3]
+activepress="0.000000"
+border_size="0.000000"
+combine="1003.000000"
+type="nothing"
+[buttons_1x3]
+activepress="0.000000"
+border_size="0.000000"
+combine="1003.000000"
+type="nothing"
+[buttons_0x3]
+activepress="0.000000"
+border_size="0.000000"
+combine="3.000000"
+type="nothing"
+picture=""
+text="Both examples are set up with example twitch triggers. Don't forget to change those if you don't like those."
+color="9794137.000000"
+button_id="39.000000"
+[buttons_3x2]
+activepress="0.000000"
+border_size="0.000000"
+combine="1002.000000"
+type="nothing"
+[buttons_2x2]
+activepress="0.000000"
+border_size="0.000000"
+combine="1002.000000"
+type="nothing"
+[buttons_1x2]
+activepress="0.000000"
+border_size="0.000000"
+combine="1001.000000"
+type="nothing"
+[buttons_0x2]
+activepress="0.000000"
+border_size="0.000000"
+combine="1001.000000"
+type="nothing"
+[buttons_3x1]
+activepress="0.000000"
+border_size="0.000000"
+combine="1002.000000"
+type="nothing"
+[buttons_2x1]
+activepress="0.000000"
+border_size="0.000000"
+combine="1002.000000"
+type="nothing"
+[buttons_1x1]
+activepress="0.000000"
+border_size="0.000000"
+combine="1001.000000"
+type="nothing"
+[buttons_0x1]
+activepress="0.000000"
+border_size="0.000000"
+combine="1001.000000"
+type="nothing"
+[buttons_3x0]
+activepress="0.000000"
+border_size="0.000000"
+combine="1002.000000"
+type="nothing"
+[buttons_2x0]
+activepress="0.000000"
+border_size="0.000000"
+combine="2.000000"
+type="websocketaction+pubsubaction+"
+picture=""
+text="OBSCord Snap#Channel Point#Example"
+color="12632256.000000"
+button_id="38.000000"
+pubsubredeemmessage0="*"
+pubsubredeem0="OBSCord Snap"
+pubsubaction0="6.000000"
+pubsubqueue="0.000000"
+websocketdelay16="0.000000"
+websocketvalue8_16=""
+websocketvalue7_16=""
+websocketvalue6_16=""
+websocketvalue5_16=""
+websocketvalue4_16=""
+websocketvalue3_16=""
+websocketvalue2_16=""
+websocketvalue1_16="channelPointText"
+websocketaction16="60.000000"
+websocketdelay15="0.000000"
+websocketvalue8_15=""
+websocketvalue7_15=""
+websocketvalue6_15=""
+websocketvalue5_15=""
+websocketvalue4_15=""
+websocketvalue3_15=""
+websocketvalue2_15=""
+websocketvalue1_15="Clearing the channelPointText after it's done otherwise it's possible that the next screenshot will have the same message"
+websocketaction15="92.000000"
+websocketdelay14="0.000000"
+websocketvalue8_14=""
+websocketvalue7_14="/$channelPointText$/"
+websocketvalue6_14="/$filePath$/"
+websocketvalue5_14="/$sourceName$/"
+websocketvalue4_14="/$obswsPass$/"
+websocketvalue3_14="/$obswsURL$/"
+websocketvalue2_14="/$webhookURL$/"
+websocketvalue1_14="OBSCord Snap"
+websocketaction14="71.000000"
+websocketdelay13="0.000000"
+websocketvalue8_13=""
+websocketvalue7_13=""
+websocketvalue6_13=""
+websocketvalue5_13=""
+websocketvalue4_13=""
+websocketvalue3_13=""
+websocketvalue2_13=""
+websocketvalue1_13="If you set up everything above you don't need to touch this."
+websocketaction13="92.000000"
+websocketdelay12="0.000000"
+websocketvalue8_12=""
+websocketvalue7_12=""
+websocketvalue6_12=""
+websocketvalue5_12=""
+websocketvalue4_12=""
+websocketvalue3_12="false"
+websocketvalue2_12="2"
+websocketvalue1_12="channelPointText"
+websocketaction12="35.000000"
+websocketdelay11="0.000000"
+websocketvalue8_11=""
+websocketvalue7_11=""
+websocketvalue6_11=""
+websocketvalue5_11=""
+websocketvalue4_11=""
+websocketvalue3_11=""
+websocketvalue2_11=""
+websocketvalue1_11="If someone adds a message from twitch chat this will be added as well"
+websocketaction11="92.000000"
+websocketdelay10="0.000000"
+websocketvalue8_10=""
+websocketvalue7_10=""
+websocketvalue6_10=""
+websocketvalue5_10=""
+websocketvalue4_10=""
+websocketvalue3_10=""
+websocketvalue2_10="10"
+websocketvalue1_10="filePath"
+websocketaction10="22.000000"
+websocketdelay9="0.000000"
+websocketvalue8_9=""
+websocketvalue7_9=""
+websocketvalue6_9=""
+websocketvalue5_9=""
+websocketvalue4_9=""
+websocketvalue3_9=""
+websocketvalue2_9=""
+websocketvalue1_9="Put the absolute path in the Value field below where you want to save the screenshot EX: C:/screenshot.png"
+websocketaction9="92.000000"
+websocketdelay8="0.000000"
+websocketvalue8_8=""
+websocketvalue7_8=""
+websocketvalue6_8=""
+websocketvalue5_8=""
+websocketvalue4_8=""
+websocketvalue3_8=""
+websocketvalue2_8="10"
+websocketvalue1_8="sourceName"
+websocketaction8="22.000000"
+websocketdelay7="0.000000"
+websocketvalue8_7=""
+websocketvalue7_7=""
+websocketvalue6_7=""
+websocketvalue5_7=""
+websocketvalue4_7=""
+websocketvalue3_7=""
+websocketvalue2_7=""
+websocketvalue1_7="Put the source name of what you want to screenshot in the Value field below"
+websocketaction7="92.000000"
+websocketdelay6="0.000000"
+websocketvalue8_6=""
+websocketvalue7_6=""
+websocketvalue6_6=""
+websocketvalue5_6=""
+websocketvalue4_6=""
+websocketvalue3_6=""
+websocketvalue2_6="10"
+websocketvalue1_6="obswsPass"
+websocketaction6="22.000000"
+websocketdelay5="0.000000"
+websocketvalue8_5=""
+websocketvalue7_5=""
+websocketvalue6_5=""
+websocketvalue5_5=""
+websocketvalue4_5=""
+websocketvalue3_5=""
+websocketvalue2_5=""
+websocketvalue1_5="Put your OBS Websocket password in the Value field below. Can be left bank if you didn't set one up"
+websocketaction5="92.000000"
+websocketdelay4="0.000000"
+websocketvalue8_4=""
+websocketvalue7_4=""
+websocketvalue6_4=""
+websocketvalue5_4=""
+websocketvalue4_4=""
+websocketvalue3_4=""
+websocketvalue2_4="10"
+websocketvalue1_4="obswsURL"
+websocketaction4="22.000000"
+websocketdelay3="0.000000"
+websocketvalue8_3=""
+websocketvalue7_3=""
+websocketvalue6_3=""
+websocketvalue5_3=""
+websocketvalue4_3=""
+websocketvalue3_3=""
+websocketvalue2_3=""
+websocketvalue1_3="Put your OBS Websocket url & port in the Value field below. Default is localhost:4444. Can be left blank"
+websocketaction3="92.000000"
+websocketdelay2="0.000000"
+websocketvalue8_2=""
+websocketvalue7_2=""
+websocketvalue6_2=""
+websocketvalue5_2=""
+websocketvalue4_2=""
+websocketvalue3_2=""
+websocketvalue2_2="10"
+websocketvalue1_2="webhookURL"
+websocketaction2="22.000000"
+websocketdelay1="0.000000"
+websocketvalue8_1=""
+websocketvalue7_1=""
+websocketvalue6_1=""
+websocketvalue5_1=""
+websocketvalue4_1=""
+websocketvalue3_1=""
+websocketvalue2_1=""
+websocketvalue1_1="Put your Discord webhook URL in the Value field below"
+websocketaction1="92.000000"
+websocketdelay0="0.000000"
+websocketvalue8_0=""
+websocketvalue7_0=""
+websocketvalue6_0=""
+websocketvalue5_0=""
+websocketvalue4_0=""
+websocketvalue3_0=""
+websocketvalue2_0=""
+websocketvalue1_0="Pre-Setup variables down here"
+websocketaction0="92.000000"
+[buttons_1x0]
+activepress="0.000000"
+border_size="0.000000"
+combine="1001.000000"
+type="nothing"
+[buttons_0x0]
+activepress="0.000000"
+border_size="0.000000"
+combine="1.000000"
+type="websocketaction+pubsubaction+"
+picture=""
+text="OBSCord Snap#Chat Message#Example"
+color="12632256.000000"
+button_id="34.000000"
+pubsubchattype1="0.000000"
+pubsubchat1="!obscordsnap *"
+pubsubaction1="3.000000"
+pubsubchattype0="0.000000"
+pubsubchat0="!obscordsnap"
+pubsubaction0="3.000000"
+pubsubqueue="0.000000"
+websocketdelay16="0.000000"
+websocketvalue8_16=""
+websocketvalue7_16=""
+websocketvalue6_16=""
+websocketvalue5_16=""
+websocketvalue4_16=""
+websocketvalue3_16=""
+websocketvalue2_16=""
+websocketvalue1_16="chatMessage"
+websocketaction16="60.000000"
+websocketdelay15="0.000000"
+websocketvalue8_15=""
+websocketvalue7_15=""
+websocketvalue6_15=""
+websocketvalue5_15=""
+websocketvalue4_15=""
+websocketvalue3_15=""
+websocketvalue2_15=""
+websocketvalue1_15="Clearing the chatmessage after it's done otherwise it's possible that the next screenshot will have the same message"
+websocketaction15="92.000000"
+websocketdelay14="0.000000"
+websocketvalue8_14=""
+websocketvalue7_14="/$chatMessage$/"
+websocketvalue6_14="/$filePath$/"
+websocketvalue5_14="/$sourceName$/"
+websocketvalue4_14="/$obswsPass$/"
+websocketvalue3_14="/$obswsURL$/"
+websocketvalue2_14="/$webhookURL$/"
+websocketvalue1_14="OBSCord Snap"
+websocketaction14="71.000000"
+websocketdelay13="0.000000"
+websocketvalue8_13=""
+websocketvalue7_13=""
+websocketvalue6_13=""
+websocketvalue5_13=""
+websocketvalue4_13=""
+websocketvalue3_13=""
+websocketvalue2_13=""
+websocketvalue1_13="If you set up everything above you don't need to touch this."
+websocketaction13="92.000000"
+websocketdelay12="0.000000"
+websocketvalue8_12=""
+websocketvalue7_12=""
+websocketvalue6_12=""
+websocketvalue5_12=""
+websocketvalue4_12=""
+websocketvalue3_12="false"
+websocketvalue2_12="0"
+websocketvalue1_12="chatMessage"
+websocketaction12="98.000000"
+websocketdelay11="0.000000"
+websocketvalue8_11=""
+websocketvalue7_11=""
+websocketvalue6_11=""
+websocketvalue5_11=""
+websocketvalue4_11=""
+websocketvalue3_11=""
+websocketvalue2_11=""
+websocketvalue1_11="If someone adds a message from twitch chat this will be added as well"
+websocketaction11="92.000000"
+websocketdelay10="0.000000"
+websocketvalue8_10=""
+websocketvalue7_10=""
+websocketvalue6_10=""
+websocketvalue5_10=""
+websocketvalue4_10=""
+websocketvalue3_10=""
+websocketvalue2_10="10"
+websocketvalue1_10="filePath"
+websocketaction10="22.000000"
+websocketdelay9="0.000000"
+websocketvalue8_9=""
+websocketvalue7_9=""
+websocketvalue6_9=""
+websocketvalue5_9=""
+websocketvalue4_9=""
+websocketvalue3_9=""
+websocketvalue2_9=""
+websocketvalue1_9="Put the absolute path in the Value field below where you want to save the screenshot EX: C:/screenshot.png"
+websocketaction9="92.000000"
+websocketdelay8="0.000000"
+websocketvalue8_8=""
+websocketvalue7_8=""
+websocketvalue6_8=""
+websocketvalue5_8=""
+websocketvalue4_8=""
+websocketvalue3_8=""
+websocketvalue2_8="10"
+websocketvalue1_8="sourceName"
+websocketaction8="22.000000"
+websocketdelay7="0.000000"
+websocketvalue8_7=""
+websocketvalue7_7=""
+websocketvalue6_7=""
+websocketvalue5_7=""
+websocketvalue4_7=""
+websocketvalue3_7=""
+websocketvalue2_7=""
+websocketvalue1_7="Put the source name of what you want to screenshot in the Value field below"
+websocketaction7="92.000000"
+websocketdelay6="0.000000"
+websocketvalue8_6=""
+websocketvalue7_6=""
+websocketvalue6_6=""
+websocketvalue5_6=""
+websocketvalue4_6=""
+websocketvalue3_6=""
+websocketvalue2_6="10"
+websocketvalue1_6="obswsPass"
+websocketaction6="22.000000"
+websocketdelay5="0.000000"
+websocketvalue8_5=""
+websocketvalue7_5=""
+websocketvalue6_5=""
+websocketvalue5_5=""
+websocketvalue4_5=""
+websocketvalue3_5=""
+websocketvalue2_5=""
+websocketvalue1_5="Put your OBS Websocket password in the Value field below. Can be left bank if you didn't set one up"
+websocketaction5="92.000000"
+websocketdelay4="0.000000"
+websocketvalue8_4=""
+websocketvalue7_4=""
+websocketvalue6_4=""
+websocketvalue5_4=""
+websocketvalue4_4=""
+websocketvalue3_4=""
+websocketvalue2_4="10"
+websocketvalue1_4="obswsURL"
+websocketaction4="22.000000"
+websocketdelay3="0.000000"
+websocketvalue8_3=""
+websocketvalue7_3=""
+websocketvalue6_3=""
+websocketvalue5_3=""
+websocketvalue4_3=""
+websocketvalue3_3=""
+websocketvalue2_3=""
+websocketvalue1_3="Put your OBS Websocket url & port in the Value field below. Default is localhost:4444. Can be left blank"
+websocketaction3="92.000000"
+websocketdelay2="0.000000"
+websocketvalue8_2=""
+websocketvalue7_2=""
+websocketvalue6_2=""
+websocketvalue5_2=""
+websocketvalue4_2=""
+websocketvalue3_2=""
+websocketvalue2_2="10"
+websocketvalue1_2="webhookURL"
+websocketaction2="22.000000"
+websocketdelay1="0.000000"
+websocketvalue8_1=""
+websocketvalue7_1=""
+websocketvalue6_1=""
+websocketvalue5_1=""
+websocketvalue4_1=""
+websocketvalue3_1=""
+websocketvalue2_1=""
+websocketvalue1_1="Put your Discord webhook URL in the Value field below"
+websocketaction1="92.000000"
+websocketdelay0="0.000000"
+websocketvalue8_0=""
+websocketvalue7_0=""
+websocketvalue6_0=""
+websocketvalue5_0=""
+websocketvalue4_0=""
+websocketvalue3_0=""
+websocketvalue2_0=""
+websocketvalue1_0="Pre-Setup variables down here"
+websocketaction0="92.000000"
+[configs]
+name="OBSCord Snap"
+background_color="8947848.000000"
+grid_height="4.000000"
+grid_width="4.000000"
