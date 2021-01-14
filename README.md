@@ -4,6 +4,8 @@
 The Extension includes an example deck on how to use it.  
 The deck includes a method of using it as a chat command and as a channel point redemption.
 
+![Example deck screenshot](https://github.com/XSilverlink/LB-OBSCord-Snap/blob/main/Screenshots/LioranBoard_Receiver_1.png)
+
 ### Prerequisites
 * [OBS Studio](https://obsproject.com/)
 * [OBS Studio WebSocket](https://github.com/Palakis/obs-websocket/releases)
