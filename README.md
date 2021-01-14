@@ -19,5 +19,6 @@ obswsURL | OBS Websocket URL. Default is localhost:4444
 obswsPass | OBS Websocket Password.
 sourceName* | The source you want to take a screen off.
 filePath* | The filepath location. This needs to be the absolute path ending with the extension png ex: C:/screenshot.png
+optionalText | Add a text to the post that will be created on discord. This can be auto filled from chat or a channel point redeem.
 
 **Variables marked with a * are REQUIRED variables and need to filled in!**
