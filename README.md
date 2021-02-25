@@ -35,3 +35,5 @@ filePath* | The filepath location. This needs to be the absolute path ending wit
 optionalText | Add a text to the post that will be created on discord. This can be auto filled from chat or a channel point redeem.
 
 **Variables marked with a * are REQUIRED variables and need to filled in!**
+
+Shameless plug: https://twitch.tv/Silverlink
