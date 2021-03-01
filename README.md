@@ -1,4 +1,4 @@
-### _Do NOT download directly from this page but from the releases on the right_ ➡
+### *Do NOT download directly from this page but from the releases on the right* ➡
 
 # OBSCord-Snap
 **A Lioranboard Extension that makes it possible to directly make screenshots from OBS and put them online in Discord.**
