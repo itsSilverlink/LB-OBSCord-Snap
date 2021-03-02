@@ -100,7 +100,6 @@ async function OBSCordSnap(webhookURL, obswsURL, obswsPass, sourceName, filePath
     obs.disconnect();      
   })
 }
-
 [insert_over]
 [buttons_3x3]
 activepress="0.000000"
