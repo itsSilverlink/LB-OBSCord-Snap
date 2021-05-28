@@ -27,14 +27,14 @@ I made it so you can fill in the variables on each row but you can of course put
 * [Lioranboard](https://obsproject.com/forum/resources/lioranboard-stream-deck-animator.862/)
 
 ### Variables
-Variable Name | Explanation 
------------- | -------------
-webhookURL* | Discord Web hook URL. [How to create one](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
-obswsURL | OBS Websocket URL. Default is localhost:4444
+Variable Name | Explanation | Extra Information
+------------ | ------------- | -------------
+webhookURL* | Discord Web hook URL | [How to create one](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks)
+obswsURL | OBS Websocket URL. | Default is localhost:4444
 obswsPass | OBS Websocket Password.
-sourceName* | The source you want to take a screen off.
-filePath* | The filepath location. This needs to be the absolute path ending with the extension png ex: C:/screenshot.png
-optionalText | Add a text to the post that will be created on discord. This can be auto filled from chat or a channel point redeem.
+sourceName* | The source you want to take a screen off. | This can be a source, scene or group
+filePath* | The filepath location.  | This needs to be the absolute path ending with the file extension png ex: C:/screenshot.png<br>**USE / INSTEAD OF THE NORMAL \ IN YOUR PATH!**
+optionalText | Add a text to the post that will be created on discord. | This can be auto filled from chat or a channel point redeem.
 
 **Variables marked with a * are REQUIRED variables and need to filled in!**
 
